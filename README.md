@@ -1,5 +1,7 @@
 <p align="center">
-  <h1 align="center">📚 NotesHub</h1>
+  <div align="center">
+  <img src="frontend/src/assets/logo.jpg" alt="NotesHub Logo" height="80"/>
+</div>
   <p align="center">
     Structured Academic Notes Platform for Mumbai University & MSBTE Students
   </p>
