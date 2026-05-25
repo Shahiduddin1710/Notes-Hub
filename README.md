@@ -51,7 +51,7 @@ NotesHub is a MERN stack web application that provides structured academic notes
 - Express.js
 
 ### Database & Storage
-- MongoDB (Authentication Storage)
+- MongoDB (Authentication)
 - Supabase Storage (Notes Files)
 
 ---
