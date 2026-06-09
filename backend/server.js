@@ -5,13 +5,16 @@ import connectDB from "./database/db.js";
 import userRoute from "./routes/userRoute.js";
 import notesRoute from "./routes/notesRoute.js";
 import termsRoutes from "./routes/termsRoutes.js";
+import adminRoute from "./routes/adminRoute.js";
 
 const app = express();
 
 const allowedOrigins = [
   "https://noteshub-five.vercel.app",
+  "https://noteshub-admin.vercel.app",
   "http://localhost:5173",
-  "http://localhost:3000",
+  "http://localhost:5174",
+
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
@@ -25,7 +28,7 @@ const corsOptions = {
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "username", "password"],
 };
 
 app.options("*", cors(corsOptions));
@@ -39,6 +42,7 @@ app.get("/health", (req, res) => {
 app.use("/api/auth", userRoute);
 app.use("/api/notes", notesRoute);
 app.use("/api/terms", termsRoutes);
+app.use("/api/admin", adminRoute);
 
 
 app.use((req, res) => {

@@ -1,4 +1,10 @@
-import supabase from "../config/supabase.js";
+import cloudinary from "../config/cloudinary.js";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 export const getNotes = async (req, res) => {
   try {
@@ -11,37 +17,65 @@ export const getNotes = async (req, res) => {
       });
     }
 
-    const baseUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/notes`;
-
     const folderPath = subSubject
+      ? `noteshub/${university}/${semester}/${subject}/${subSubject}`
+      : `noteshub/${university}/${semester}/${subject}`;
+
+    const supabasePath = subSubject
       ? `${university}/${semester}/${subject}/${subSubject}`
       : `${university}/${semester}/${subject}`;
 
-    const { data, error } = await supabase.storage
-      .from("notes")
-      .list(folderPath, { limit: 100 });
+let cloudinaryNotes = [];
+try {
+  const cloudinaryResult = await cloudinary.api.resources_by_asset_folder(folderPath, {
+    max_results: 100
+  });
+  cloudinaryNotes = (cloudinaryResult.resources || []).map(file => ({
+    name: file.display_name || file.public_id.split("/").pop(),
+    url: file.secure_url,
+    provider: "cloudinary"
+  }));
+} catch (e) {
+  // console.warn("Cloudinary folder not found:", folderPath);
+}
 
-    if (error || !data || data.length === 0) {
+    const { data: supabaseFiles, error } = await supabase.storage
+      .from("notes")
+      .list(supabasePath, { limit: 100 });
+
+    const supabaseNotes = [];
+    if (!error && supabaseFiles && supabaseFiles.length > 0) {
+      supabaseFiles
+        .filter(f => f.name.endsWith(".pdf"))
+        .forEach(file => {
+          const { data } = supabase.storage
+            .from("notes")
+            .getPublicUrl(`${supabasePath}/${file.name}`);
+          supabaseNotes.push({
+            name: file.name,
+            url: data.publicUrl,
+            provider: "supabase"
+          });
+        });
+    }
+
+    const allNotes = [...cloudinaryNotes, ...supabaseNotes];
+
+    if (allNotes.length === 0) {
       return res.status(404).json({
         success: false,
         message: "Notes not found"
       });
     }
 
-    const notes = data
-      .filter(file => !file.name.endsWith("/"))
-      .map(file => ({
-        name: file.name,
-        url: `${baseUrl}/${folderPath}/${file.name}`
-      }));
-
     res.status(200).json({
       success: true,
-      count: notes.length,
-      notes
+      count: allNotes.length,
+      notes: allNotes
     });
 
   } catch (error) {
+    console.log("Error:", error);
     res.status(500).json({
       success: false,
       message: error.message || "Server error"

@@ -498,7 +498,7 @@ const LAB_SUBJECTS = ["dbms-lab", "os-lab", "web-tech-lab"];
                       Login
                     </span>
                   )}
-                  <h3
+              <h3
                     style={{
                       margin: "0 0 0",
                       fontWeight: 700,
@@ -507,7 +507,7 @@ const LAB_SUBJECTS = ["dbms-lab", "os-lab", "web-tech-lab"];
                       paddingRight: locked ? "60px" : 0,
                     }}
                   >
-                    {file.name}
+                    {file.name.replace(/_[a-z0-9]{4,}$/i, "").replace(/\.pdf$/i, "")}
                   </h3>
                   <button
                     onClick={() => handleFileClick(file)}
