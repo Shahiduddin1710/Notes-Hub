@@ -7,7 +7,8 @@ import {
   forgotPassword,
   verifyOTP,
   changePassword,
-  sendContactMail
+  sendContactMail,
+  googleAuth
 } from "../controllers/userController.js";
 
 import { isAuthenticated } from "../middleware/isAuthenticated.js";
@@ -23,6 +24,7 @@ const router = express.Router();
 router.post("/register", validate(registerSchema), registerUser);
 router.get("/verify/:token", verification);
 router.post("/login", validate(loginSchema), loginUser);
+router.post("/google-auth", googleAuth);
 router.post("/logout", isAuthenticated, logoutUser);
 router.post("/forgot-password", forgotPassword);
 router.post("/verify-otp/:email", verifyOTP);

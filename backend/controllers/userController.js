@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import { verifyMail } from "../emailVerify/verifyMail.js";
 import { sendOtpMail } from "../emailVerify/sendOtpMail.js";
 import nodemailer from "nodemailer";
-
+import { adminAuth } from "../config/firebaseAdmin.js";
 
 const FRONTEND_URL = "https://noteshub-five.vercel.app/";
 
@@ -334,6 +334,106 @@ export const changePassword = async (req, res) => {
 };
 
 
+
+// Google Sign-In
+export const googleAuth = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      return res.status(400).json({
+        success: false,
+        message: "Google ID token is required",
+      });
+    }
+
+let decodedFirebase;
+    try {
+      decodedFirebase = await adminAuth.verifyIdToken(idToken);
+    } catch (err) {
+      console.log("FIREBASE TOKEN VERIFY ERROR:", err.message);
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired Google token",
+      });
+    }
+
+    console.log("DECODED FIREBASE:", JSON.stringify({ email: decodedFirebase.email, name: decodedFirebase.name }));
+    const { email, name, email_verified } = decodedFirebase;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Google account has no email associated",
+      });
+    }
+
+let user = await User.findOne({ email });
+
+    if (!user) {
+      try {
+        user = await User.create({
+          username: name || email.split("@")[0],
+          email,
+          isVerified: email_verified ?? true,
+          isLoggedIn: false,
+          termsAccepted: false,
+          authProvider: "google",
+        });
+       
+      } catch (createErr) {
+        
+        return res.status(500).json({ success: false, message: createErr.message });
+      }
+    } else if (user.authProvider === "local") {
+      // existing local account, same email -> link Google sign-in to it
+      user.authProvider = "google";
+      if (!user.isVerified && email_verified) {
+        user.isVerified = true;
+      }
+      await user.save();
+    }
+
+    await Session.deleteMany({ userId: user._id });
+    await Session.create({ userId: user._id });
+
+    const accessToken = jwt.sign(
+      { id: user._id },
+      process.env.SECRET_KEY,
+      { expiresIn: "10d" }
+    );
+
+    const refreshToken = jwt.sign(
+      { id: user._id },
+      process.env.SECRET_KEY,
+      { expiresIn: "30d" }
+    );
+
+    user.isLoggedIn = true;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: `Welcome ${user.username}`,
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        termsAccepted: user.termsAccepted,
+      },
+    });
+} catch (error) {
+console.log("GOOGLE AUTH ERROR FULL:", JSON.stringify(error, null, 2));
+    console.log("GOOGLE AUTH ERROR MSG:", error.message);
+    console.log("GOOGLE AUTH ERROR CODE:", error.code);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
+  }
+};
 
 export const sendContactMail = async (req, res) => {
   try {

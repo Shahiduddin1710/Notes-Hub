@@ -32,11 +32,13 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
-  const updateUser = (updatedUser) => {
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    setUser(updatedUser);
+const updateUser = (updater) => {
+    setUser((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : { ...prev, ...updater };
+      localStorage.setItem("user", JSON.stringify(next));
+      return next;
+    });
   };
-
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");

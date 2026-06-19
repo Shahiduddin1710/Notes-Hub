@@ -14,6 +14,8 @@
   <img src="https://img.shields.io/badge/Node.js-Backend-success?style=for-the-badge">
   <img src="https://img.shields.io/badge/MongoDB-Database-brightgreen?style=for-the-badge">
   <img src="https://img.shields.io/badge/Supabase-Storage-orange?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Cloudinary-Storage-blue?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Firebase-Google Auth-yellow?style=for-the-badge">
 </p>
 
 ---
@@ -29,7 +31,7 @@ NotesHub is a MERN stack web application that provides structured academic notes
 ---
 
 ## Features
-- User Authentication
+- User Authentication (Email/Password + Google Sign-In)
 - Terms & Conditions Acceptance
 - University-wise Notes Access
 - Semester & Subject Navigation
@@ -50,9 +52,16 @@ NotesHub is a MERN stack web application that provides structured academic notes
 - Node.js
 - Express.js
 
-### Database & Storage
-- MongoDB (Authentication)
+### Database
+- MongoDB (User Authentication & Data Storage)
+
+### Storage
 - Supabase Storage (Notes Files)
+- Cloudinary (Additional File Storage)
+
+### Authentication
+- JWT (Access & Refresh Tokens)
+- Firebase Authentication (Google Sign-In only)
 
 ---
 

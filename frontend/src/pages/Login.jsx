@@ -4,6 +4,7 @@ import AuthLayout from "../auth/AuthLayout";
 import { login as loginService } from "../services/auth.service";
 import Message from "../components/Message";
 import { useAuth } from "../context/AuthContext";
+import GoogleAuthButton from "../components/GoogleAuthButton";
 
 export default function Login() {
  const [form, setForm] = useState({ email: "", password: "" });
@@ -64,7 +65,7 @@ export default function Login() {
             )}
           </button>
         </div>
-        <div className="auth-forgot-row">
+<div className="auth-forgot-row">
           <Link to="/forgot-password">Forgot password?</Link>
         </div>
         <button disabled={loading}>
@@ -78,6 +79,12 @@ export default function Login() {
           ) : "Continue"}
         </button>
       </form>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "16px 0" }}>
+        <div style={{ flex: 1, height: 1, background: "#e2e8f0" }} />
+        <span style={{ fontSize: 12, color: "#94a3b8" }}>OR</span>
+        <div style={{ flex: 1, height: 1, background: "#e2e8f0" }} />
+      </div>
+      <GoogleAuthButton onError={(text) => setMessage(text ? { type: "error", text } : null)} />
     </AuthLayout>
   );
 }

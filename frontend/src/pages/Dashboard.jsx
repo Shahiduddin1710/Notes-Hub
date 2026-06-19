@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import DonateModal from "../components/DonateModal";
 import "./pages.css";
 
 const NotesIcon = () => (
@@ -15,9 +17,16 @@ const SupportIcon = () => (
   </svg>
 );
 
+const HeartIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="#e11d48" stroke="#e11d48" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+  </svg>
+);
+
 const Dashboard = () => {
-  const navigate = useNavigate();
+const navigate = useNavigate();
   const { user } = useAuth();
+  const [showDonate, setShowDonate] = useState(false);
 
   return (
     <div className="page-wrapper">
@@ -33,7 +42,7 @@ const Dashboard = () => {
           </p>
         </div>
 
-        <div className="card-grid">
+  <div className="card-grid">
           <div className="dashboard-card" onClick={() => navigate("/access-notes")}>
             <div className="dash-card-icon dash-icon-indigo">
               <NotesIcon />
@@ -50,6 +59,65 @@ const Dashboard = () => {
             <p>Quick support whenever you're stuck or need assistance.</p>
           </div>
         </div>
+
+      {/* Support Banner */}
+        <div
+onClick={() => setShowDonate(true)}
+          style={{
+            marginTop: "1.5rem",
+            background: "white",
+            border: "1.5px solid #eef2ff",
+            borderRadius: "20px",
+            padding: "1.25rem 1.75rem",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            cursor: "pointer",
+            gap: "1rem",
+            flexWrap: "wrap",
+            boxShadow: "0 6px 20px rgba(79, 70, 229, 0.08)",
+            transition: "transform 0.18s ease, box-shadow 0.18s ease",
+          }}
+          onMouseEnter={e => e.currentTarget.style.transform = "translateY(-3px)"}
+          onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+      <div style={{
+              width: 48, height: 48, borderRadius: "12px",
+              background: "#fff1f2",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0,
+            }}>
+              <HeartIcon />
+            </div>
+            <div>
+              <p style={{ margin: 0, fontWeight: 700, fontSize: "1rem", color: "#0f172a" }}>
+                NotesHub is free & ad-free
+              </p>
+              <p style={{ margin: "3px 0 0", fontSize: "0.82rem", color: "#64748b" }}>
+                If it helped you, consider supporting us with a small donation!
+              </p>
+            </div>
+          </div>
+      <button style={{
+            background: "#4f46e5",
+            color: "white",
+            border: "none",
+            borderRadius: "10px",
+            padding: "8px 18px",
+            fontWeight: 700,
+            fontSize: "0.85rem",
+            cursor: "pointer",
+            whiteSpace: "nowrap",
+            fontFamily: "Inter, system-ui, sans-serif",
+            boxShadow: "0 4px 12px rgba(79, 70, 229, 0.35)",
+          flexShrink: 0,
+          }}>
+            Support Us
+          </button>
+        </div>
+
+        {showDonate && <DonateModal onClose={() => setShowDonate(false)} />}
 
       </main>
     </div>

@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 
 import { Suspense } from "react";
+import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { authRoutes } from "./auth/auth.routes";
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -16,7 +17,7 @@ import AccessNotes from "./pages/AccessNotes";
 import ContactUs from "./pages/ContactUs";
 import Subjects from "./pages/Subjects";
 import Files from "./pages/Files";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/Navbar"; 
 import PageWrapper from "./components/PageWrapper";
 import ScrollToTop from "./components/ScrollToTop";
 import Disclaimer from "./pages/Disclaimer";
@@ -44,10 +45,12 @@ const AnimatedRoutes = () => {
 
   const showTerms = isAuthenticated && !!user && !user.termsAccepted;
 
-  const handleAcceptTerms = () => {
-    updateUser({ ...user, termsAccepted: true });
-  };
+ const navigate = useNavigate();
 
+const handleAcceptTerms = () => {
+    updateUser((prev) => ({ ...prev, termsAccepted: true }));
+    navigate("/dashboard", { replace: true });
+  };
  const handleDeclineTerms = () => {
     logout();
     window.location.href = "/";

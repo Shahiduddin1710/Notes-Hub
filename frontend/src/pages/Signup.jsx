@@ -4,6 +4,7 @@ import AuthLayout from "../auth/AuthLayout";
 import { signup as signupService } from "../services/auth.service";
 import Message from "../components/Message";
 import { useAuth } from "../context/AuthContext";
+import GoogleAuthButton from "../components/GoogleAuthButton";
 
 export default function Signup() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -64,7 +65,7 @@ export default function Signup() {
             )}
           </button>
         </div>
-        <button disabled={loading}>
+<button disabled={loading}>
           {loading ? (
             <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "spin 1s linear infinite" }}>
@@ -75,6 +76,12 @@ export default function Signup() {
           ) : "Create account"}
         </button>
       </form>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "16px 0" }}>
+        <div style={{ flex: 1, height: 1, background: "#e2e8f0" }} />
+        <span style={{ fontSize: 12, color: "#94a3b8" }}>OR</span>
+        <div style={{ flex: 1, height: 1, background: "#e2e8f0" }} />
+      </div>
+      <GoogleAuthButton onError={(text) => setMessage(text ? { type: "error", text } : null)} />
     </AuthLayout>
   );
 }

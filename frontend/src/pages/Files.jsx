@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import DonateModal from "../components/DonateModal";
 import "./pages.css";
 
 const PROTECTED_KEYWORDS = [
@@ -221,11 +222,13 @@ const Files = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
-  const [files, setFiles] = useState([]);
+ const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState(null);
   const [authGate, setAuthGate] = useState(null);
   const [merging, setMerging] = useState(false);
+const [showDonate, setShowDonate] = useState(false);
+  const donateShown = useRef(false);
 
   const token = localStorage.getItem("token");
 
@@ -282,6 +285,14 @@ const LAB_SUBJECTS = ["dbms-lab", "os-lab", "web-tech-lab"];
   
   const folderGate = isFolderProtected && !isAuthenticated;
 
+useEffect(() => {
+    if (isAuthenticated && isFolderProtected && !sessionStorage.getItem("donate_shown")) {
+      sessionStorage.setItem("donate_shown", "true");
+      donateShown.current = true;
+      setShowDonate(true);
+    }
+  }, [isAuthenticated, isFolderProtected]);
+
   useEffect(() => {
     // If folder is protected and user not logged in, don't fetch
     if (isFolderProtected && !isAuthenticated) return;
@@ -324,7 +335,7 @@ const LAB_SUBJECTS = ["dbms-lab", "os-lab", "web-tech-lab"];
   };
 
   
-  if (folderGate) {
+if (folderGate) {
     return (
       <>
         <div className="page-wrapper">
@@ -379,7 +390,12 @@ const LAB_SUBJECTS = ["dbms-lab", "os-lab", "web-tech-lab"];
     );
   }
 
-  if (loading) return <DotsLoader />;
+if (loading) return (
+  <>
+    <DotsLoader />
+    {showDonate && <DonateModal onClose={() => setShowDonate(false)} />}
+  </>
+);
 
   if (status === "empty") {
     return (
@@ -617,6 +633,7 @@ const LAB_SUBJECTS = ["dbms-lab", "os-lab", "web-tech-lab"];
       </div>
 
     
+    {showDonate && <DonateModal onClose={() => setShowDonate(false)} />}
       {authGate && (
         <AuthGate
           fileName={authGate.fileName}
