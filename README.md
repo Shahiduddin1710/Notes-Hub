@@ -70,8 +70,7 @@ NotesHub is a MERN stack web application that provides structured academic notes
 <b>Shahiduddin Shaikh (Shaho)</b>
 <br/>
 Bachelor of Engineering in Computer Engineering
-<br/>
-Vidyavardhini College of Engineering, Vasai
+
 </p>
 
 ---
